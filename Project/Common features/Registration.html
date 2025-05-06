@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.8em;
+            display: none;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form id="registration-form" novalidate>
+        <h1>Registration Form</h1>
+        
+        <div class="form-group">
+            <label for="full-name">Full Name:</label>
+            <input type="text" id="full-name" required>
+            <span id="name-error" class="error">Please enter your full name</span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" required>
+            <span id="email-error" class="error">Please enter a valid email address</span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required minlength="8">
+            <span id="password-error" class="error">Password must be at least 8 characters</span>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" required>
+            <span id="confirm-error" class="error">Passwords must match</span>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" min="18" max="120">
+            <span id="age-error" class="error">Must be between 18 and 120</span>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="agree" required>
+            <label for="agree">I agree to the terms and conditions</label>
+            <span id="agree-error" class="error">You must agree to the terms</span>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        const name = document.getElementById('full-name');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm-password');
+        const age = document.getElementById('age');
+        const agree = document.getElementById('agree');
+    
+        const nameError = document.getElementById('name-error');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        const confirmError = document.getElementById('confirm-error');
+        const ageError = document.getElementById('age-error');
+        const agreeError = document.getElementById('agree-error');
+    
+        function isValidEmail(value) {
+            let atFound = false;
+            let dotFound = false;
+            let atPosition = -1;
+            let dotPosition = -1;
+    
+            for (let i = 0; i < value.length; i++) {
+                if (value[i] === '@' && atPosition === -1) {
+                    atFound = true;
+                    atPosition = i;
+                } else if (value[i] === '.' && atFound) {
+                    dotFound = true;
+                    dotPosition = i;
+                }
+            }
+    
+            if (
+                !atFound || !dotFound ||
+                atPosition < 1 ||                        // '@' must not be first
+                dotPosition < atPosition + 2 ||         // dot must come at least 2 chars after '@'
+                dotPosition + 2 >= value.length          // at least 2 chars after '.'
+            ) {
+                return false;
+            }
+            return true;
+        }
+    
+        email.addEventListener('input', () => {
+            const value = email.value.trim();
+            if (isValidEmail(value)) {
+                emailError.style.display = 'none';
+            } else {
+                emailError.style.display = 'block';
+            }
+        });
+    
+        name.addEventListener('input', () => {
+            if (name.value.trim() === '') {
+                nameError.style.display = 'block';
+            } else {
+                nameError.style.display = 'none';
+            }
+        });
+    
+        password.addEventListener('input', () => {
+            if (password.value.length < 8) {
+                passwordError.style.display = 'block';
+            } else {
+                passwordError.style.display = 'none';
+            }
+        });
+    
+        confirmPassword.addEventListener('input', () => {
+            if (confirmPassword.value !== password.value) {
+                confirmError.style.display = 'block';
+            } else {
+                confirmError.style.display = 'none';
+            }
+        });
+    
+        age.addEventListener('input', () => {
+            if (age.value < 18 || age.value > 120) {
+                ageError.style.display = 'block';
+            } else {
+                ageError.style.display = 'none';
+            }
+        });
+    
+        agree.addEventListener('change', () => {
+            if (!agree.checked) {
+                agreeError.style.display = 'block';
+            } else {
+                agreeError.style.display = 'none';
+            }
+        });
+    
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            name.dispatchEvent(new Event('input'));
+            email.dispatchEvent(new Event('input'));
+            password.dispatchEvent(new Event('input'));
+            confirmPassword.dispatchEvent(new Event('input'));
+            age.dispatchEvent(new Event('input'));
+            agree.dispatchEvent(new Event('change'));
+    
+            const errors = document.querySelectorAll('.error');
+            let hasError = false;
+            errors.forEach(error => {
+                if (error.style.display === 'block') {
+                    hasError = true;
+                }
+            });
+    
+            if (!hasError) {
+                // Show success message for 2 seconds then redirect
+                alert('Registration successful! You will be redirected to login page.');
+                
+                // Redirect to login page after 2 seconds
+                setTimeout(function() {
+                    window.location.href = 'User autho.html';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

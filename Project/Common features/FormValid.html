@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="validation">
+        <fieldset>
+            <legend>Form Validation</legend>
+            <form id="validated-form">
+                <div class="form-group">
+                    <label for="full-name">Full Name:</label>
+                    <input type="text" id="full-name" required>
+                    <span class="error" id="name-error">Please enter your full name</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" required>
+                    <span class="error" id="email-error">Please enter a valid email address</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required minlength="8">
+                    <span class="error" id="password-error">Password must be at least 8 characters</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password:</label>
+                    <input type="password" id="confirm-password" required>
+                    <span class="error" id="confirm-error">Passwords must match</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" min="18" max="120">
+                    <span class="error" id="age-error">Must be between 18 and 120</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="agree">
+                        <input type="checkbox" id="agree" required> I agree to the terms and conditions
+                    </label>
+                    <span class="error" id="agree-error">You must agree to the terms</span>
+                </div>
+                
+                <input type="submit" value="Submit Form">
+                <span class="success" id="form-success" style="display:none;">Form submitted successfully!</span>
+            </form>
+        </fieldset>
+    </div>
+    
+    <script>
+        document.getElementById('validated-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            let isValid = true;
+            
+            // Name validation
+            const name = document.getElementById('full-name');
+            if (name.value.trim() === '') {
+                document.getElementById('name-error').style.display = 'block';
+                name.classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('name-error').style.display = 'none';
+                name.classList.remove('invalid');
+                name.classList.add('valid');
+            }
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                document.getElementById('email-error').style.display = 'block';
+                email.classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('email-error').style.display = 'none';
+                email.classList.remove('invalid');
+                email.classList.add('valid');
+            }
+            
+            // Password validation
+            const password = document.getElementById('password');
+            if (password.value.length < 8) {
+                document.getElementById('password-error').style.display = 'block';
+                password.classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('password-error').style.display = 'none';
+                password.classList.remove('invalid');
+                password.classList.add('valid');
+            }
+            
+            // Confirm password
+            const confirmPassword = document.getElementById('confirm-password');
+            if (confirmPassword.value !== password.value) {
+                document.getElementById('confirm-error').style.display = 'block';
+                confirmPassword.classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('confirm-error').style.display = 'none';
+                confirmPassword.classList.remove('invalid');
+                confirmPassword.classList.add('valid');
+            }
+            
+            // Age validation
+            const age = document.getElementById('age');
+            if (age.value && (age.value < 18 || age.value > 120)) {
+                document.getElementById('age-error').style.display = 'block';
+                age.classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('age-error').style.display = 'none';
+                age.classList.remove('invalid');
+                if (age.value) age.classList.add('valid');
+            }
+            
+            // Terms checkbox
+            const agree = document.getElementById('agree');
+            if (!agree.checked) {
+                document.getElementById('agree-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('agree-error').style.display = 'none';
+            }
+            
+            if (isValid) {
+                document.getElementById('form-success').style.display = 'block';
+               
+            }
+        });
+    </script>
+</body>
+</html>
