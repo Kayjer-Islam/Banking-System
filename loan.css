@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    margin: 0;
+    padding: 40px;
+  }
+  
+  .loan-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .loan-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .loan-container label {
+    display: block;
+    margin: 10px 0 5px;
+  }
+  
+  .loan-container input,
+  .loan-container select,
+  .loan-container button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+  
+  #loanOutput {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+  

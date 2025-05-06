@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bill Pay</title>
+  <link rel="stylesheet" href="billpay.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Schedule Bill Payment</h2>
+    <form id="billForm">
+      <input type="text" placeholder="Biller Name" required>
+      <input type="number" placeholder="Amount" required>
+      <input type="date" required>
+      <button type="submit">Schedule Payment</button>
+    </form>
+
+    <h3>Scheduled Payments</h3>
+    <ul id="billList"></ul>
+  </div>
+  <script src="billpay.js"></script>
+</body>
+</html>
