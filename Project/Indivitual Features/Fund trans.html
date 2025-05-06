@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fund Transfer</title>
+    <style>
+        body { font-family: Arial; max-width: 500px; margin: 20px auto; padding: 10px; }
+        h1 { color: #0066cc; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 3px; 
+        }
+        button { 
+            background: #0066cc; 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            width: 100%; 
+            border-radius: 3px; 
+            margin-top: 10px; 
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fund Transfer</h1>
+    
+    <div class="form-group">
+        <label>From Account</label>
+        <select id="from-account">
+            <option>Checking (****1234)</option>
+            <option>Savings (****5678)</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>To Account</label>
+        <select id="to-account">
+            <option value="">Select recipient</option>
+            <option value="kayjer">Kayjer Islam (****9012)</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Amount</label>
+        <input type="text" id="amount" placeholder="0.00">
+    </div>
+    
+    <button onclick="transferFunds()">Transfer Money</button>
+
+    <script>
+        function transferFunds() {
+            const from = document.getElementById('from-account').value;
+            const to = document.getElementById('to-account').value;
+            const amount = document.getElementById('amount').value.trim();
+
+            if (to === "") {
+                alert("Please select a recipient account.");
+                return;
+            }
+
+            if (amount === "" || isNaN(amount) || Number(amount) <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            alert("Fund has been successfully transferred!");
+        }
+    </script>
+</body>
+</html>
