@@ -118,7 +118,6 @@ if (!isset($_SESSION['email'])) {
           <option value="">Select recipient</option>
           <option value="kayjer">SM Nahid (****9012)</option>
           <option value="kayjer">Salman (****9667)</option>
-
         </select>
       </div>
       <div class="form-group">
@@ -145,8 +144,9 @@ if (!isset($_SESSION['email'])) {
       }
 
       alert("Fund has been successfully transferred!");
-      // Optionally reset form here:
-      // document.querySelector('.transfer-form').reset();
+
+      // Reset form after successful transfer
+      document.querySelector('.transfer-form').reset();
     }
   </script>
 </body>

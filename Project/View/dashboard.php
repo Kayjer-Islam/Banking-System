@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['email'])) {
     header("Location: ../Controller/login.php");
     exit();
@@ -240,8 +239,7 @@ if (!isset($_SESSION['email'])) {
       <a href="#" class="nav-btn">My Profile</a>
       <a href="#" class="nav-btn">Transactions</a>
       <a href="#" class="nav-btn">Bill Pay</a>
-      <a href="#" class="nav-btn">Card</a>
-
+      <a href="../View/cardmanage.php" class="nav-btn">Card</a>
     </div>
     
     <div class="dashboard-grid">
@@ -253,10 +251,10 @@ if (!isset($_SESSION['email'])) {
         <div class="stat-value">$12,458.50</div>
         <p class="stat-label">Available Balance</p>
         <div class="action-buttons">
-          <a href="#" class="action-btn">
+          <a href="../Controller/fundtransfer.php" class="action-btn">
             <span>Transfer</span>
           </a>
-          <a href="#" class="action-btn">
+          <a href="../Controller/checkdepo.php" class="action-btn">
             <span>Deposit</span>
           </a>
         </div>
