@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($users[$email]) && $users[$email] === $password) {
         $_SESSION['user_id'] = $email;
-        header("Location: dashboard.php");
+        header("Location: ../View/dashboard.php");
         exit();
     } else {
         $error = "Invalid email or password!";

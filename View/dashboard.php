@@ -61,6 +61,12 @@ if (!isset($_SESSION['user_id'])) {
       <a href="search.php">Search & Filter</a>
       <a href="contact.php">Contact Us</a>
       <a href="export.php">Export Data</a>
+      <a href="security-alerts.php">Security Alerts</a>
+      <a href="loan.php">Loan Application</a>
+      <a href="interest.php">Interest calculator</a>
+      <a href="billpay.php">Bill pay</a>
+      <a href="transactionHistory.php">Transaction History</a>
+
     </div>
   </main>
 

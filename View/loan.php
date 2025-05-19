@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit();
+}
+?><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Loan Application</title>
-  <link rel="stylesheet" href="loan.css">
+  <link rel="stylesheet" href="../public/loan.css">
 </head>
 <body>
   <div class="loan-container">
@@ -26,6 +32,6 @@
     <button onclick="applyLoan()">Submit Application</button>
     <div id="loanOutput"></div>
   </div>
-  <script src="loan.js"></script>
+  <script src="../Controller/loan.js"></script>
 </body>
 </html>

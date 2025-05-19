@@ -1,9 +1,16 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Interest Calculator</title>
-  <link rel="stylesheet" href="interest.css">
+  <link rel="stylesheet" href="../public/interest.css">
 </head>
 <body>
   <div class="container">
@@ -26,6 +33,6 @@
     <div id="output"></div>
   </div>
 
-  <script src="interest.js"></script>
+  <script src="../Controller/interest.js"></script>
 </body>
 </html>

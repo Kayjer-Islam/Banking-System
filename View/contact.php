@@ -1,9 +1,22 @@
 <?php
 session_start();
+
+ //Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
+
+// Retrieve previous input and messages
+$name = $_SESSION['form_data']['name'] ?? '';
+$email = $_SESSION['form_data']['email'] ?? '';
+$subject = $_SESSION['form_data']['subject'] ?? '';
+$message = $_SESSION['form_data']['message'] ?? '';
+$form_message = $_SESSION['message'] ?? '';
+
+// Clear after use
+unset($_SESSION['form_data']);
+unset($_SESSION['message']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,17 +31,12 @@ if (!isset($_SESSION['user_id'])) {
     }
 
     .page {
-      display: none;
       max-width: 600px;
       margin: auto;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .page.active {
-      display: block;
     }
 
     input, textarea {
@@ -49,10 +57,16 @@ if (!isset($_SESSION['user_id'])) {
       cursor: pointer;
     }
 
-
     .success {
       color: green;
-      font-size: 1.2em;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    .error {
+      color: red;
+      font-size: 1.1em;
+      margin-bottom: 15px;
     }
 
     .captcha {
@@ -62,21 +76,27 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-  <!-- Contact Form Page -->
-  <div id="contactFormPage" class="page active">
+  <div id="contactFormPage" class="page">
     <h2>Contact Us</h2>
-    <form method="post" id="contactForm" action = "contactValid.php" >
+
+    <?php if ($form_message): ?>
+      <div class="<?= str_contains($form_message, 'successfully') ? 'success' : 'error' ?>">
+        <?= htmlspecialchars($form_message) ?>
+      </div>
+    <?php endif; ?>
+
+    <form method="post" id="contactForm" action="../Controller/contactValid.php">
       <label>Name:</label>
-      <input type="text" id="name" name="name">
+      <input type="text" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required>
 
       <label>Email:</label>
-      <input type="email" id="email" name="email">
+      <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
 
       <label>Subject:</label>
-      <input type="text" id="subject" name="subject">
+      <input type="text" id="subject" name="subject" value="<?= htmlspecialchars($subject) ?>" required>
 
       <label>Message:</label>
-      <textarea id="message" rows="5" name="message"></textarea>
+      <textarea id="message" rows="5" name="message" required><?= htmlspecialchars($message) ?></textarea>
 
       <!-- CAPTCHA -->
       <div class="captcha">
@@ -89,16 +109,6 @@ if (!isset($_SESSION['user_id'])) {
     </form>
   </div>
 
-  <script>
-    function generateCaptcha() {
-      const a = Math.floor(Math.random() * 10 + 1);
-      const b = Math.floor(Math.random() * 10 + 1);
-      const answer = a + b;
-      document.getElementById('captchaLabel').textContent = `What is ${a} + ${b}?`;
-      document.getElementById('captchaAnswer').value = answer;
-    }
-
-    generateCaptcha();
-  </script>
+  <script src="../controller/contactValid.js"></script>
 </body>
 </html>

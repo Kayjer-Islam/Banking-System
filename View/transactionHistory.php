@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +43,6 @@
     </table>
   </div>
 
-  <script src="transactionHistory.js"></script>
+  <script src="../Controller/transactionHistory.js"></script>
 </body>
 </html>

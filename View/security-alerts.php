@@ -1,9 +1,19 @@
+<?php
+session_start();
+
+ //Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location:login.php");
+    exit();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Security Alerts</title>
-  <link rel="stylesheet" href="security-alerts.css">
+  <link rel="stylesheet" href="../public/security-alerts.css">
 </head>
 <body>
   <div class="container">
@@ -36,6 +46,6 @@
     </section>
   </div>
 
-  <script src="security-alerts.js"></script>
+  <script src="../Controller/security-alerts.js"></script>
 </body>
 </html>

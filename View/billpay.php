@@ -1,9 +1,16 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.php");
+  exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Bill Pay</title>
-  <link rel="stylesheet" href="billpay.css">
+  <link rel="stylesheet" href="../public/billpay.css">
 </head>
 <body>
   <div class="container">
@@ -18,6 +25,6 @@
     <h3>Scheduled Payments</h3>
     <ul id="billList"></ul>
   </div>
-  <script src="billpay.js"></script>
+  <script src="../Controller/billpay.js"></script>
 </body>
 </html>

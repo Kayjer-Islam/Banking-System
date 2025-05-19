@@ -12,10 +12,10 @@ if (!isset($_SESSION['user_id'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profile Management</title>
-  <link rel="stylesheet" href="profile.css" />
+  <link rel="stylesheet" href="../public/profile.css" />
 </head>
 <body>
-  <form class="profile-form" method="POST" enctype="multipart/form-data">
+  <form class="profile-form" method="POST" enctype="multipart/form-data" action="../Controller/profilevalid.php" onsubmit="return validateProfileForm();">
     <h1>Profile Management</h1>
 
     <div class="avatar-group">
@@ -48,5 +48,7 @@ if (!isset($_SESSION['user_id'])) {
 
     <button type="submit">Save All Changes</button>
   </form>
+
+  <script src="../Controller/profilevalid.js"></script>
 </body>
 </html>

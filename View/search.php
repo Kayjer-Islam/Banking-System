@@ -34,6 +34,6 @@ if (!isset($_SESSION['user_id'])) {
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="../Controller/search.js"></script>
 </body>
 </html>
