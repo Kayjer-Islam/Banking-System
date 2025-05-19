@@ -236,9 +236,14 @@ if (!isset($_SESSION['email'])) {
     </header>
     
     <div class="quick-nav">
-      <a href="#" class="nav-btn">My Profile</a>
-      <a href="#" class="nav-btn">Transactions</a>
-      <a href="#" class="nav-btn">Bill Pay</a>
+      <a href="profile.php" class="nav-btn">My Profile</a>
+      <a href="transactionHistory.php" class="nav-btn">Transactions</a>
+      <a href="billpay.php" class="nav-btn">Bill Pay</a>
+      <a href="contact.php" class="nav-btn">Contact Us</a>
+      <a href="search.php" class="nav-btn">Search & Filter</a>
+      <a href="security-alerts.php" class="nav-btn">Security Alerts</a>
+      <a href="contact.php" class="nav-btn">Contact Us</a>
+
       <a href="../View/cardmanage.php" class="nav-btn">Card</a>
     </div>
     
@@ -266,17 +271,17 @@ if (!isset($_SESSION['email'])) {
           <div class="widget-icon">⚡</div>
         </div>
         <div class="action-buttons">
-          <a href="#" class="action-btn">
+          <a href="billpay.php" class="action-btn">
             <span>Pay Bills</span>
           </a>
-          <a href="#" class="action-btn">
+          <a href="interest.php" class="action-btn">
             <span>Interest Calculator</span>
           </a>
-          <a href="#" class="action-btn">
+          <a href="transactionHistory.php" class="action-btn">
             <span>Transaction History</span>
           </a>
-          <a href="#" class="action-btn">
-            <span>Account Settings</span>
+          <a href="loan.php" class="action-btn">
+            <span>Loan Application</span>
           </a>
         </div>
       </div>
