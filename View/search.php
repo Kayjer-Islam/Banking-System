@@ -11,7 +11,7 @@ if (!isset($_SESSION['email'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Banking System - Search & Filter</title>
-  <link rel="stylesheet" href="search.css" />
+  <link rel="stylesheet" href="../public/search.css" />
 </head>
 <body>
   <div class="container">

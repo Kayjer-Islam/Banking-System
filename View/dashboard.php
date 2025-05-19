@@ -236,13 +236,13 @@ if (!isset($_SESSION['email'])) {
     </header>
     
     <div class="quick-nav">
-      <a href="profile.php" class="nav-btn">My Profile</a>
+      <a href="profile.php" class="nav-btn">Edit Profile</a>
       <a href="transactionHistory.php" class="nav-btn">Transactions</a>
       <a href="billpay.php" class="nav-btn">Bill Pay</a>
-      <a href="contact.php" class="nav-btn">Contact Us</a>
       <a href="search.php" class="nav-btn">Search & Filter</a>
       <a href="security-alerts.php" class="nav-btn">Security Alerts</a>
       <a href="contact.php" class="nav-btn">Contact Us</a>
+      <a href="export.php" class="nav-btn"> Export Data </a>
 
       <a href="../View/cardmanage.php" class="nav-btn">Card</a>
     </div>
