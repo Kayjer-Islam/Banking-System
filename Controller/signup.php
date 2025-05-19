@@ -1,5 +1,4 @@
 <?php
-// signup.php
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = [];
 
-    // Server-side validation (mirroring JS side)
     if (empty($fullName)) {
         $errors[] = "Full name is required.";
     }
@@ -38,12 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "You must agree to the terms.";
     }
 
-    // If no errors, simulate success and redirect to login
     if (empty($errors)) {
-        // Hash the password (for future DB use)
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // Store in session (for testing/demo purposes)
         $_SESSION['user_data'] = [
             'name' => $fullName,
             'email' => $email,
@@ -51,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'age' => $age
         ];
 
-        // Redirect to login
         header("Location: Login.php");
         exit();
     }
