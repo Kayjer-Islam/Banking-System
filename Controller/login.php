@@ -22,27 +22,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($emailErr) && empty($passwordErr)) {
+        $_SESSION['email'] = $email;
+        
         if ($email === "admin@mail.com" && $password === "admin123") {
-            $_SESSION['email'] = $email;
             $_SESSION['role'] = "admin";
-            header("Location: Admin.php");
+            header("Location: admin.php");
             exit();
-        } elseif ($email === "user@mail.com" && $password === "user12345") {
-            $_SESSION['email'] = $email;
+        } else {
             $_SESSION['role'] = "user";
             header("Location: ../View/dashboard.php");
             exit();
-        } else {
-            $loginError = "Invalid email or password.";
         }
+    } else {
+        $loginError = "Please fix the errors below.";
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>User Authentication</title>
     <style>
         body {
@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td><label for="login-email">Email:</label></td>
                     <td>
-                        <input type="email" id="login-email" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                        <input type="email" id="login-email" name="email" value="<?php echo htmlspecialchars($email); ?>" />
                         <?php if (!empty($emailErr)): ?>
                             <span class="error"><?php echo $emailErr; ?></span>
                         <?php endif; ?>
@@ -162,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td><label for="login-password">Password:</label></td>
                     <td>
-                        <input type="password" id="login-password" name="password">
+                        <input type="password" id="login-password" name="password" />
                         <?php if (!empty($passwordErr)): ?>
                             <span class="error"><?php echo $passwordErr; ?></span>
                         <?php endif; ?>
@@ -170,7 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input type="submit" value="Login">
+                        <input type="submit" value="Login" />
                     </td>
                 </tr>
             </table>
