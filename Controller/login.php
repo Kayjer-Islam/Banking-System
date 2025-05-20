@@ -22,16 +22,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($emailErr) && empty($passwordErr)) {
-        if ($email == "admin@mail.com" && $password == "admin123") {
+        if ($email === "admin@mail.com" && $password === "admin123") {
             $_SESSION['email'] = $email;
             $_SESSION['role'] = "admin";
             header("Location: Admin.php");
             exit();
-        } else {
+        } elseif ($email === "user@mail.com" && $password === "user12345") {
             $_SESSION['email'] = $email;
             $_SESSION['role'] = "user";
             header("Location: ../View/dashboard.php");
             exit();
+        } else {
+            $loginError = "Invalid email or password.";
         }
     }
 }
@@ -112,26 +114,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #45a049;
         }
 
-        .button-link {
-            display: inline-block;
-            text-align: center;
-            width: 100%;
-            padding: 10px 15px;
-            background-color: #f1f1f1;
-            color: #333;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-top: 10px;
-            font-size: 16px;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .button-link:hover {
-            background-color: #ddd;
-            text-decoration: none;
-        }
-
         a {
             color: #4CAF50;
             text-decoration: none;
@@ -145,11 +127,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-align: center;
             margin: 15px 0;
         }
-        
+
         .error {
             color: red;
-            font-size: 0.8em;
-            margin-top: 5px;
+            font-size: 0.85em;
+            margin-top: 4px;
+            display: block;
         }
     </style>
 </head>
@@ -161,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td colspan="2">
                         <h2>Login to Your Account</h2>
-                        <p>Don't have an account? <a href="Registration.php">Sign up</a> or <a href="forgot-password.php">reset password</a></p>
+                        <p>Don't have an account? <a href="signup.php">Sign up</a></p>
                         <?php if (!empty($loginError)): ?>
                             <p class="error"><?php echo $loginError; ?></p>
                         <?php endif; ?>
@@ -170,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td><label for="login-email">Email:</label></td>
                     <td>
-                        <input type="email" id="login-email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
+                        <input type="email" id="login-email" name="email" value="<?php echo htmlspecialchars($email); ?>">
                         <?php if (!empty($emailErr)): ?>
                             <span class="error"><?php echo $emailErr; ?></span>
                         <?php endif; ?>
@@ -179,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td><label for="login-password">Password:</label></td>
                     <td>
-                        <input type="password" id="login-password" name="password" required>
+                        <input type="password" id="login-password" name="password">
                         <?php if (!empty($passwordErr)): ?>
                             <span class="error"><?php echo $passwordErr; ?></span>
                         <?php endif; ?>
@@ -188,7 +171,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tr>
                     <td colspan="2">
                         <input type="submit" value="Login">
-                        <a class="button-link" href="forgot-password.php">Forgot Password?</a>
                     </td>
                 </tr>
             </table>
@@ -201,41 +183,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             let password = document.getElementById('login-password').value.trim();
             let isValid = true;
 
-            document.getElementById('login-email').style.borderColor = '#ddd';
-            document.getElementById('login-password').style.borderColor = '#ddd';
-            
-            let existingErrors = document.querySelectorAll('.js-error');
-            existingErrors.forEach(error => error.remove());
+            document.querySelectorAll('.js-error').forEach(e => e.remove());
 
             if (email === "") {
-                showError('login-email', "Email cannot be empty!");
+                showJsError('login-email', "Email cannot be empty!");
                 isValid = false;
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showError('login-email', "Please enter a valid email address!");
+                showJsError('login-email', "Please enter a valid email address!");
                 isValid = false;
             }
 
             if (password === "") {
-                showError('login-password', "Password cannot be empty!");
+                showJsError('login-password', "Password cannot be empty!");
                 isValid = false;
             } else if (password.length < 8) {
-                showError('login-password', "Password must be at least 8 characters!");
+                showJsError('login-password', "Password must be at least 8 characters!");
                 isValid = false;
             }
 
-         
             return isValid;
         }
 
-        function showError(fieldId, message) {
+        function showJsError(fieldId, message) {
             let field = document.getElementById(fieldId);
             field.style.borderColor = 'red';
-            
-            let errorElement = document.createElement('span');
-            errorElement.className = 'error js-error';
-            errorElement.textContent = message;
-            
-            field.parentNode.appendChild(errorElement);
+
+            let error = document.createElement('span');
+            error.className = 'error js-error';
+            error.textContent = message;
+
+            field.parentNode.appendChild(error);
         }
     </script>
 </body>
