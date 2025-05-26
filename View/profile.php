@@ -12,7 +12,7 @@ if (!isset($_SESSION['email'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profile Management</title>
-  <link rel="stylesheet" href="../public/profile.css" />
+  <link rel="stylesheet" href="../Asset/profile.css" />
 </head>
 <body>
   <form class="profile-form" method="POST" enctype="multipart/form-data" action="../Controller/profilevalid.php" onsubmit="return validateProfileForm();">

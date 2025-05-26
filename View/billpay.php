@@ -12,12 +12,8 @@ $email = $_SESSION['email'];
 <head>
   <meta charset="UTF-8">
   <title>Bill Pay</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    section { margin-bottom: 40px; }
-    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 8px; }
-    th { background-color: #f0f0f0; }
-  </style>
+  <link rel="stylesheet" href="../Asset/billpay.css">
+
 </head>
 <body>
   <h1>Welcome, <?= htmlspecialchars($email) ?>!</h1>

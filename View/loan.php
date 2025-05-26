@@ -9,7 +9,7 @@ if (!isset($_SESSION['email'])) {
 <head>
   <meta charset="UTF-8">
   <title>Loan Application</title>
-  <link rel="stylesheet" href="../public/loan.css">
+  <link rel="stylesheet" href="../Asset/loan.css">
 </head>
 <body>
   <div class="loan-container">

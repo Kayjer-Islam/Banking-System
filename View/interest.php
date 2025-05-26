@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 <head>
   <meta charset="UTF-8">
   <title>Interest Calculator</title>
-  <link rel="stylesheet" href="../public/interest.css">
+  <link rel="stylesheet" href="../Asset/interest.css">
 </head>
 <body>
   <div class="container">

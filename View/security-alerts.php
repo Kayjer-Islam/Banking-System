@@ -11,7 +11,7 @@ if (!isset($_SESSION['email'])) {
 <head>
   <meta charset="UTF-8">
   <title>Security Alerts</title>
-  <link rel="stylesheet" href="../public/security-alerts.css">
+  <link rel="stylesheet" href="../Asset/security-alerts.css">
 </head>
 <body>
   <div class="container">

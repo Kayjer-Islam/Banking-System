@@ -11,7 +11,7 @@ if (!isset($_SESSION['email'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Transaction History</title>
-  <link rel="stylesheet" href="../public/transactionHistory.css" />
+  <link rel="stylesheet" href="../Asset/transactionHistory.css" />
 </head>
 <body>
   <div class="container">
