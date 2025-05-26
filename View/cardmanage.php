@@ -6,11 +6,12 @@ if (!isset($_SESSION['email'])) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Management</title>
     <style>
-        /* Reset some basics */
         * {
             box-sizing: border-box;
         }
@@ -167,7 +168,7 @@ if (!isset($_SESSION['email'])) {
 
             <button onclick="reportLost()">Report Lost/Stolen</button>
             <button onclick="togglePinInput()">Change PIN</button>
-            <a href="Atm loc.html" target="_blank" class="atm-link">ATMs Near Me</a>
+            <a href="atmloc.php" target="_blank" class="atm-link">ATMs Near Me</a>
 
             <div class="pin-input" id="pinInput">
                 <input type="text" id="pinField" maxlength="4" placeholder="Enter 4-digit PIN" oninput="validatePIN(this)">

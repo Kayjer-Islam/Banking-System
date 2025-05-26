@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
-  header("Location: ../Controller/login.php");
+  header("Location: login.php");
   exit();
 }
 ?>
@@ -10,7 +10,7 @@ if (!isset($_SESSION['email'])) {
 <head>
   <meta charset="UTF-8">
   <title>Bill Pay</title>
-  <style>
+<style>
     .container {
       max-width: 400px;
       margin: auto;
@@ -109,15 +109,63 @@ if (!isset($_SESSION['email'])) {
   <div class="container">
     <h2>Schedule Bill Payment</h2>
     <form id="billForm">
-      <input type="text" placeholder="Biller Name" required>
-      <input type="number" placeholder="Amount" required>
-      <input type="date" required>
+      <input type="text" name="biller" placeholder="Biller Name" required>
+      <input type="number" name="amount" placeholder="Amount" required>
+      <input type="date" name="date" required>
+      <select name="recurring">
+        <option value="none">One-time</option>
+        <option value="monthly">Monthly</option>
+        <option value="weekly">Weekly</option>
+      </select>
       <button type="submit">Schedule Payment</button>
     </form>
 
     <h3>Scheduled Payments</h3>
     <ul id="billList"></ul>
   </div>
-  <script src="../Controller/billpay.js"></script>
+
+  <script>
+    const billList = document.getElementById('billList');
+
+    // Load existing bills
+    fetch('../Controller/billpay.php')
+      .then(res => res.json())
+      .then(bills => {
+        bills.forEach(addBillToDOM);
+      });
+
+    // Add new bill
+    document.getElementById('billForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      fetch('../Controller/BillController.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(bill => {
+        addBillToDOM(bill);
+        this.reset();
+      });
+    });
+
+    function addBillToDOM(bill) {
+      const li = document.createElement('li');
+      li.setAttribute('data-id', bill.id);
+      li.innerHTML = `<span>${bill.biller} - $${bill.amount} on ${bill.due_date} (${bill.recurring})</span>
+                      <button onclick="deleteBill(${bill.id}, this)">Delete</button>`;
+      billList.appendChild(li);
+    }
+
+    function deleteBill(id, button) {
+      fetch(`../Controller/BillController.php`, {
+        method: 'DELETE',
+        body: new URLSearchParams({ id })
+      }).then(() => {
+        button.closest('li').remove();
+      });
+    }
+  </script>
 </body>
 </html>
