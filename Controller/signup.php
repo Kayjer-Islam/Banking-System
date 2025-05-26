@@ -2,9 +2,10 @@
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and validate POST inputs
-    $fullName = trim($_POST['full-name']);
-    $email = trim($_POST['email']);
+    require_once '../model/db.php'; 
+
+    $fullName = mysqli_real_escape_string($con, trim($_POST['full-name']));
+    $email = mysqli_real_escape_string($con, trim($_POST['email']));
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm-password'];
     $age = isset($_POST['age']) ? (int)$_POST['age'] : null;
@@ -37,17 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $query = "INSERT INTO users (username, password, email, age)
+                  VALUES ('$fullName', '$password', '$email', $age)";
 
-        $_SESSION['user_data'] = [
-            'name' => $fullName,
-            'email' => $email,
-            'password' => $hashedPassword,
-            'age' => $age
-        ];
-
-        header("Location: Login.php");
-        exit();
+        if (mysqli_query($con, $query)) {
+            $_SESSION['user_data'] = [
+                'name' => $fullName,
+                'email' => $email,
+                'password' => $password,
+                'age' => $age
+            ];
+            mysqli_close($con);
+            header("Location: Login.php");
+            exit();
+        } else {
+            $errors[] = "Database error: " . mysqli_error($con);
+        }
     }
 }
 ?>
@@ -94,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Registration Form</h1>
 
     <form method="post" action="" id="registration-form" novalidate>
-        <?php if (!empty($errors)): ?>
+        <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($errors)): ?>
             <div class="server-error">
                 <ul>
                     <?php foreach ($errors as $error): ?>
