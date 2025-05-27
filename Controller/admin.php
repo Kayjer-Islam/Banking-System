@@ -100,7 +100,7 @@ if (isset($_POST['logout'])) {
       color: white;
     }
 
-    .admin-table tr:hover {
+    .admin-table tbody tr:hover {
       background-color: #f0f8ff;
     }
 
