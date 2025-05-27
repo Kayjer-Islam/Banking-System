@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+require_once '../model/db.php'; 
+
 $email = $password = "";
 $emailErr = $passwordErr = "";
 $loginError = "";
@@ -22,22 +24,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($emailErr) && empty($passwordErr)) {
-        $_SESSION['email'] = $email;
-        
         if ($email === "admin@mail.com" && $password === "admin123") {
+            $_SESSION['email'] = $email;
             $_SESSION['role'] = "admin";
             header("Location: admin.php");
             exit();
-        } else {
-            $_SESSION['role'] = "user";
-            header("Location: ../View/dashboard.php");
-            exit();
         }
+
+        $emailSafe = mysqli_real_escape_string($con, $email);
+        $query = "SELECT * FROM users WHERE email = '$emailSafe' LIMIT 1";
+        $result = mysqli_query($con, $query);
+
+        if ($result && mysqli_num_rows($result) === 1) {
+            $user = mysqli_fetch_assoc($result);
+            if ($user['password'] === $password) { 
+                $_SESSION['email'] = $email;
+                $_SESSION['role'] = "user";
+                header("Location: ../View/dashboard.php");
+                exit();
+            } else {
+                $loginError = "Incorrect password.";
+            }
+        } else {
+            $loginError = "No account found with that email.";
+        }
+
+        mysqli_close($con);
     } else {
         $loginError = "Please fix the errors below.";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
