@@ -1,19 +1,18 @@
 <?php
-
 session_start();
 if (!isset($_SESSION['email'])) {
     header("Location: ../Controller/login.php");
     exit();
 }
 
-// Retrieve previous input and messages
+// Retrieve previous form data and messages
 $name = $_SESSION['form_data']['name'] ?? '';
 $email = $_SESSION['form_data']['email'] ?? '';
 $subject = $_SESSION['form_data']['subject'] ?? '';
 $message = $_SESSION['form_data']['message'] ?? '';
 $form_message = $_SESSION['message'] ?? '';
 
-// Clear after use
+// Clear session data after use
 unset($_SESSION['form_data']);
 unset($_SESSION['message']);
 ?>
@@ -79,9 +78,15 @@ unset($_SESSION['message']);
     <h2>Contact Us</h2>
 
     <?php if ($form_message): ?>
-      <div class="<?= str_contains($form_message, 'successfully') ? 'success' : 'error' ?>">
+      <div class="<?= (strpos($form_message, 'successfully') !== false) ? 'success' : 'error' ?>">
         <?= htmlspecialchars($form_message) ?>
       </div>
+
+      <?php if (strpos($form_message, 'successfully') !== false): ?>
+        <script>
+          alert("✅ Your message was submitted successfully and will be reviewed soon.");
+        </script>
+      <?php endif; ?>
     <?php endif; ?>
 
     <form method="post" id="contactForm" action="../Controller/contactValid.php">

@@ -16,21 +16,21 @@ function validateProfileForm() {
     return false;
   }
 
-  
   if (!/^\d{11}$/.test(phone)) {
-    alert("Phone number must be  11 digits.");
+    alert("Phone number must be 11 digits.");
     return false;
   }
 
-  if (newPass !== '' && newPass.length < 8) {
-    alert("New password must be at least 8 characters long.");
-    return false;
+  if (newPass !== '') {
+    if (newPass.length < 8) {
+      alert("New password must be at least 8 characters.");
+      return false;
+    }
+    if (newPass !== confirmPass) {
+      alert("New password and confirmation do not match.");
+      return false;
+    }
   }
 
-  if (newPass !== '' && newPass !== confirmPass) {
-    alert("New password and confirm password do not match.");
-    return false;
-  }
-
-  return true; // Allow form to submit
+  return true; // form is valid
 }
