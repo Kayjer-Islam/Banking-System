@@ -100,7 +100,7 @@ if (!isset($_SESSION['email'])) {
         <div id="application-result"></div>
     </div>
     <div class="box">
-        <h2>Your Applications & E-sign</h2>
+        <h2>Your Applications </h2>
         <div id="application-status-list"><i>Loading...</i></div>
     </div>
     <script src="../controller/loanApp.js"></script>

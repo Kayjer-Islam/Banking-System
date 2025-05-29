@@ -70,6 +70,7 @@ button:hover {
 }
 
 #output {
+  display: none; 
   margin-top: 25px;
   padding: 15px;
   background-color: #f9fafb;

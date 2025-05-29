@@ -22,9 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Validate phone
     $phone = trim($_POST['phone']);
-    if (!preg_match('/^\d{11}$/', $phone)) {
-        $errors[] = "Phone number must be 11 digits.";
-    }
+    if (!(ctype_digit($phone) && strlen($phone) === 11)) {
+    $errors[] = "Phone number must be 11 digits.";
+}
 
     // Password validation
     $current_pass = $_POST['current_pass'] ?? '';
