@@ -3,7 +3,6 @@ session_start();
 require_once '../model/dbuser.php';
 
 $email = $password = "";
-$emailErr = $passwordErr = "";
 $loginError = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajax'])) {
@@ -134,7 +133,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajax'])) {
             margin-top: 4px;
             display: block;
         }
-        
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -211,7 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ajax'])) {
             if (email === '') {
                 document.getElementById('email-error').textContent = "Email is required";
                 valid = false;
-            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            } else if (email.indexOf('@') === -1 || email.indexOf('.') === -1 || email.indexOf('@') > email.lastIndexOf('.')) {
                 document.getElementById('email-error').textContent = "Invalid email format";
                 valid = false;
             }
