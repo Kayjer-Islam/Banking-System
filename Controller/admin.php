@@ -6,11 +6,113 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+require_once '../model/dbuser.php';
+
+if (!$con) {
+    die("Database connection failed: " . mysqli_connect_error());
+}
+
 if (isset($_POST['logout'])) {
     session_destroy();
     header("Location: logout.php");
     exit();
 }
+
+$totalUsers = 0;
+$activeUsers = 0;
+$newThisWeek = 0;
+$users = [];
+
+$result = mysqli_query($con, "SELECT COUNT(*) as count FROM users");
+if ($result) {
+    $totalUsers = mysqli_fetch_assoc($result)['count'];
+} else {
+    die("Error fetching total users: " . mysqli_error($con));
+}
+
+$result = mysqli_query($con, "SELECT COUNT(*) as count FROM users WHERE status='active'");
+if ($result) {
+    $activeUsers = mysqli_fetch_assoc($result)['count'];
+} else {
+    die("Error fetching active users: " . mysqli_error($con));
+}
+
+$result = mysqli_query($con, "SELECT COUNT(*) as count FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+if ($result) {
+    $newThisWeek = mysqli_fetch_assoc($result)['count'];
+} else {
+    die("Error fetching new users: " . mysqli_error($con));
+}
+
+$result = mysqli_query($con, "SELECT * FROM users ORDER BY id DESC");
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $users[] = $row;
+    }
+} else {
+    die("Error fetching users: " . mysqli_error($con));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_user'])) {
+        $accountNumber = mysqli_real_escape_string($con, $_POST['account_number']);
+        $name = mysqli_real_escape_string($con, $_POST['name']);
+        $email = mysqli_real_escape_string($con, $_POST['email']);
+        $role = mysqli_real_escape_string($con, $_POST['role']);
+        $status = mysqli_real_escape_string($con, $_POST['status']);
+        
+        $query = "INSERT INTO users (account_number, username, email, role, status) 
+                  VALUES ('$accountNumber', '$name', '$email', '$role', '$status')";
+        if (!mysqli_query($con, $query)) {
+            die("Error adding user: " . mysqli_error($con));
+        }
+        header("Location: admin.php"); 
+        exit();
+    } 
+    elseif (isset($_POST['edit_user'])) {
+        $id = (int)$_POST['user_id'];
+        $accountNumber = mysqli_real_escape_string($con, $_POST['account_number']);
+        $name = mysqli_real_escape_string($con, $_POST['name']);
+        $email = mysqli_real_escape_string($con, $_POST['email']);
+        $role = mysqli_real_escape_string($con, $_POST['role']);
+        $status = mysqli_real_escape_string($con, $_POST['status']);
+        
+        $query = "UPDATE users SET 
+                  account_number = '$accountNumber',
+                  username = '$name',
+                  email = '$email',
+                  role = '$role',
+                  status = '$status'
+                  WHERE id = $id";
+        if (!mysqli_query($con, $query)) {
+            die("Error updating user: " . mysqli_error($con));
+        }
+        header("Location: admin.php"); 
+        exit();
+    } 
+    elseif (isset($_POST['toggle_status'])) {
+        $id = (int)$_POST['user_id'];
+        $query = "UPDATE users SET 
+                  status = IF(status='active', 'suspended', 'active')
+                  WHERE id = $id";
+        if (!mysqli_query($con, $query)) {
+            die("Error toggling status: " . mysqli_error($con));
+        }
+        header("Location: admin.php"); 
+        exit();
+    } 
+    elseif (isset($_POST['delete_user'])) {
+        $id = (int)$_POST['user_id'];
+        $query = "DELETE FROM users WHERE id = $id";
+        if (!mysqli_query($con, $query)) {
+            die("Error deleting user: " . mysqli_error($con));
+        }
+        header("Location: admin.php"); 
+        exit();
+    }
+}
+
+mysqli_close($con);
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +122,7 @@ if (isset($_POST['logout'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
   <style>
-    body {
+     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f0f8ff;
       margin: 0;
@@ -161,6 +263,7 @@ if (isset($_POST['logout'])) {
       }
     }
   </style>
+  </style>
 </head>
 <body>
   <div id="admin">
@@ -175,15 +278,15 @@ if (isset($_POST['logout'])) {
         <div class="stats-container">
           <div class="stat-box">
             <h3>Total Users</h3>
-            <div class="stat-value">1,245</div>
+            <div class="stat-value"><?php echo number_format($totalUsers); ?></div>
           </div>
           <div class="stat-box">
             <h3>Active Accounts</h3>
-            <div class="stat-value">342</div>
+            <div class="stat-value"><?php echo number_format($activeUsers); ?></div>
           </div>
           <div class="stat-box">
             <h3>New This Week</h3>
-            <div class="stat-value">56</div>
+            <div class="stat-value"><?php echo number_format($newThisWeek); ?></div>
           </div>
         </div>
       </div>
@@ -196,6 +299,7 @@ if (isset($_POST['logout'])) {
         <table class="admin-table" id="userTable">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Account Number</th>
               <th>Name</th>
               <th>Email</th>
@@ -205,45 +309,84 @@ if (isset($_POST['logout'])) {
             </tr>
           </thead>
           <tbody>
+            <?php foreach ($users as $user): ?>
             <tr>
-              <td>1001</td>
-              <td>John Smith</td>
-              <td>john@gmail.com</td>
-              <td>User</td>
-              <td>Active</td>
+              <td><?php echo $user['id']; ?></td>
+              <td><?php echo htmlspecialchars($user['account_number']); ?></td>
+              <td><?php echo htmlspecialchars($user['username']); ?></td>
+              <td><?php echo htmlspecialchars($user['email']); ?></td>
+              <td><?php echo htmlspecialchars($user['role']); ?></td>
+              <td><?php echo htmlspecialchars($user['status']); ?></td>
               <td>
-                <button onclick="editUser(this)">Edit</button>
-                <button onclick="toggleStatus(this)">Suspend</button>
+                <button onclick="showEditModal(<?php echo $user['id']; ?>, '<?php echo $user['account_number']; ?>', '<?php echo addslashes($user['username']); ?>', '<?php echo $user['email']; ?>', '<?php echo $user['role']; ?>', '<?php echo $user['status']; ?>')">Edit</button>
+                <form method="post" style="display:inline;">
+                  <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                  <input type="hidden" name="toggle_status">
+                  <button type="submit"><?php echo $user['status'] === 'active' ? 'Suspend' : 'Activate'; ?></button>
+                </form>
+                <form method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                  <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                  <input type="hidden" name="delete_user">
+                  <button type="submit" style="background-color:#e74c3c;">Delete</button>
+                </form>
               </td>
             </tr>
-            <tr>
-              <td>1002</td>
-              <td>Kayjer Islam</td>
-              <td>kayjer@gmail.com</td>
-              <td>User</td>
-              <td>Active</td>
-              <td>
-                <button onclick="editUser(this)">Edit</button>
-                <button onclick="toggleStatus(this)">Suspend</button>
-              </td>
-            </tr>
-            <tr>
-              <td>1003</td>
-              <td>Md Fahim</td>
-              <td>fahim@gmail.com</td>
-              <td>User</td>
-              <td>Pending</td>
-              <td>
-                <button onclick="editUser(this)">Edit</button>
-                <button onclick="toggleStatus(this)">Approve</button>
-              </td>
-            </tr>
+            <?php endforeach; ?>
           </tbody>
         </table>
 
         <div style="margin-top: 15px;">
-          <button onclick="addNewUser()">Add New User</button>
+          <button onclick="showAddModal()">Add New User</button>
           <button onclick="exportCSV()">Export to CSV</button>
+        </div>
+      </div>
+
+      <!-- Modal for Add/Edit User -->
+      <div id="userModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background-color:white; width:400px; margin:100px auto; padding:20px; border-radius:5px;">
+          <h2 id="modalTitle">Add New User</h2>
+          <form method="post" id="userForm">
+            <input type="hidden" name="user_id" id="modalUserId">
+            <input type="hidden" name="add_user" id="modalAddUser">
+            <input type="hidden" name="edit_user" id="modalEditUser">
+            
+            <div class="form-group">
+              <label for="modalAccountNumber">Account Number:</label>
+              <input type="text" id="modalAccountNumber" name="account_number" required style="width:100%;">
+            </div>
+            
+            <div class="form-group">
+              <label for="modalName">Name:</label>
+              <input type="text" id="modalName" name="name" required style="width:100%;">
+            </div>
+            
+            <div class="form-group">
+              <label for="modalEmail">Email:</label>
+              <input type="email" id="modalEmail" name="email" required style="width:100%;">
+            </div>
+            
+            <div class="form-group">
+              <label for="modalRole">Role:</label>
+              <select id="modalRole" name="role" style="width:100%;">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="modalStatus">Status:</label>
+              <select id="modalStatus" name="status" style="width:100%;">
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="pending">Pending</option>
+              </select>
+            </div>
+            
+            <div style="margin-top:20px;">
+              <button type="submit">Save</button>
+              <button type="button" onclick="hideModal()" style="background-color:#e74c3c;">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -268,6 +411,7 @@ if (isset($_POST['logout'])) {
   </div>
 
   <script>
+    // Search functionality
     document.getElementById("searchInput").addEventListener("keyup", function () {
       const filter = this.value.toLowerCase();
       const rows = document.querySelectorAll("#userTable tbody tr");
@@ -278,56 +422,44 @@ if (isset($_POST['logout'])) {
       });
     });
 
-    function toggleStatus(button) {
-      const statusCell = button.parentElement.previousElementSibling;
-      if (statusCell.innerText === "Active") {
-        statusCell.innerText = "Suspended";
-        button.innerText = "Activate";
-      } else {
-        statusCell.innerText = "Active";
-        button.innerText = "Suspend";
-      }
+    // Modal functions
+    function showAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add New User';
+      document.getElementById('modalAddUser').value = '1';
+      document.getElementById('modalEditUser').removeAttribute('name');
+      document.getElementById('userForm').reset();
+      document.getElementById('userModal').style.display = 'block';
     }
 
-    function editUser(button) {
-      alert("Edit functionality not implemented yet.");
+    function showEditModal(id, accountNumber, name, email, role, status) {
+      document.getElementById('modalTitle').textContent = 'Edit User';
+      document.getElementById('modalUserId').value = id;
+      document.getElementById('modalAccountNumber').value = accountNumber;
+      document.getElementById('modalName').value = name;
+      document.getElementById('modalEmail').value = email;
+      document.getElementById('modalRole').value = role;
+      document.getElementById('modalStatus').value = status;
+      document.getElementById('modalEditUser').value = '1';
+      document.getElementById('modalAddUser').removeAttribute('name');
+      document.getElementById('userModal').style.display = 'block';
     }
 
-    function addNewUser() {
-      const acc = prompt("Enter Account Number:");
-      const name = prompt("Enter Full Name:");
-      const email = prompt("Enter Email:");
-      const role = prompt("Enter Role (e.g. User/Admin):");
-      const status = prompt("Enter Status (e.g. Active/Suspended):");
-
-      if (!acc || !name || !email || !role || !status) {
-        alert("All fields are required!");
-        return;
-      }
-
-      const table = document.getElementById("userTable").getElementsByTagName('tbody')[0];
-      const newRow = table.insertRow();
-
-      newRow.innerHTML = `
-        <td>${acc}</td>
-        <td>${name}</td>
-        <td>${email}</td>
-        <td>${role}</td>
-        <td>${status}</td>
-        <td>
-          <button onclick="editUser(this)">Edit</button>
-          <button onclick="toggleStatus(this)">${status === "Active" ? "Suspend" : "Activate"}</button>
-        </td>
-      `;
+    function hideModal() {
+      document.getElementById('userModal').style.display = 'none';
     }
 
     function exportCSV() {
       let csv = [];
-      const rows = document.querySelectorAll("table tr");
-      for (let row of rows) {
-        const cols = Array.from(row.querySelectorAll("th, td")).map(cell => `"${cell.innerText}"`);
-        csv.push(cols.join(","));
-      }
+      const headers = Array.from(document.querySelectorAll("table th")).map(th => `"${th.innerText}"`);
+      csv.push(headers.join(","));
+      
+      const rows = document.querySelectorAll("table tbody tr");
+      rows.forEach(row => {
+        if (row.style.display !== 'none') {
+          const cols = Array.from(row.querySelectorAll("td")).map(td => `"${td.innerText}"`);
+          csv.push(cols.join(","));
+        }
+      });
 
       const csvContent = csv.join("\n");
       const blob = new Blob([csvContent], { type: "text/csv" });

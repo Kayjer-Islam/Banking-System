@@ -2,7 +2,13 @@
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once '../model/db.php'; 
+    require_once '../model/dbuser.php'; 
+
+    // Check if 'users' table exists
+    $tableCheck = mysqli_query($con, "SHOW TABLES LIKE 'users'");
+    if (mysqli_num_rows($tableCheck) == 0) {
+        die("Required table 'users' is missing. Please contact administrator.");
+    }
 
     $fullName = mysqli_real_escape_string($con, trim($_POST['full-name']));
     $email = mysqli_real_escape_string($con, trim($_POST['email']));
@@ -13,50 +19,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = [];
 
-    if (empty($fullName)) {
-        $errors[] = "Full name is required.";
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
-    }
-
-    if (strlen($password) < 8) {
-        $errors[] = "Password must be at least 8 characters.";
-    }
-
-    if ($password !== $confirmPassword) {
-        $errors[] = "Passwords do not match.";
-    }
-
-    if (!empty($age) && ($age < 18 || $age > 120)) {
-        $errors[] = "Age must be between 18 and 120.";
-    }
-
-    if (!$agree) {
-        $errors[] = "You must agree to the terms.";
-    }
+    // Validation
+    if (empty($fullName)) $errors[] = "Full name is required.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email format.";
+    if (strlen($password) < 8) $errors[] = "Password must be at least 8 characters.";
+    if ($password !== $confirmPassword) $errors[] = "Passwords do not match.";
+    if (!empty($age) && ($age < 18 || $age > 120)) $errors[] = "Age must be between 18 and 120.";
+    if (!$agree) $errors[] = "You must agree to the terms.";
 
     if (empty($errors)) {
-        $query = "INSERT INTO users (username, password, email, age)
-                  VALUES ('$fullName', '$password', '$email', $age)";
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $accountNumber = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        $query = "INSERT INTO users (username, password, email, age, account_number, status)
+                  VALUES ('$fullName', '$hashedPassword', '$email', $age, '$accountNumber', 'active')";
 
         if (mysqli_query($con, $query)) {
+            $userId = mysqli_insert_id($con);
             $_SESSION['user_data'] = [
+                'user_id' => $userId,
                 'name' => $fullName,
                 'email' => $email,
-                'password' => $password,
-                'age' => $age
+                'age' => $age,
+                'account_number' => $accountNumber,
+                'status' => 'active'
             ];
+
             mysqli_close($con);
             header("Location: Login.php");
             exit();
         } else {
-            $errors[] = "Database error: " . mysqli_error($con);
+            $errors[] = "Registration failed: " . mysqli_error($con);
+            mysqli_close($con);
         }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -94,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 10px;
         }
         button:hover { background-color: #1976D2; }
+        .success-message { color: green; font-size: 1em; margin-bottom: 15px; }
     </style>
 </head>
 <body>
