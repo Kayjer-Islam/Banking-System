@@ -4,15 +4,87 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit();
 }
+$email = $_SESSION['email'];
+
+$conn = new mysqli("localhost", "root", "", "webtech section a");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+$stmt = $conn->prepare("SELECT account_number FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$stmt->bind_result($account_number);
+$stmt->fetch();
+$stmt->close();
+
+$maskedCard = "****" . substr($account_number, -4);  
+
+$check = $conn->prepare("SELECT id FROM card_management WHERE email = ?");
+$check->bind_param("s", $email);
+$check->execute();
+$check->store_result();
+if ($check->num_rows === 0) {
+    $hashed_pin = password_hash(rand(1000, 9999), PASSWORD_DEFAULT);
+    $insert = $conn->prepare("INSERT INTO card_management (email, card_number, pin) VALUES (?, ?, ?)");
+    $insert->bind_param("sss", $email, $account_number, $hashed_pin);
+    $insert->execute();
+    $insert->close();
+}
+$check->close();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        header("Content-Type: application/json");
+        $response = ["success" => false];
+        if ($_POST['action'] == 'toggle_lock') {
+            $lock = $_POST['state'] === 'true' ? 1 : 0;
+            $stmt = $conn->prepare("UPDATE card_management SET lock_card = ? WHERE email = ?");
+            $stmt->bind_param("is", $lock, $email);
+            $stmt->execute();
+            $response["success"] = true;
+            $response["message"] = "Lock Card updated.";
+        } elseif ($_POST['action'] == 'toggle_intl') {
+            $intl = $_POST['state'] === 'true' ? 1 : 0;
+            $stmt = $conn->prepare("UPDATE card_management SET international_use = ? WHERE email = ?");
+            $stmt->bind_param("is", $intl, $email);
+            $stmt->execute();
+            $response["success"] = true;
+            $response["message"] = "International Use updated.";
+        } elseif ($_POST['action'] == 'report') {
+            $stmt = $conn->prepare("UPDATE card_management SET report_status = 'Reported stolen' WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $response["success"] = true;
+            $response["message"] = "Card reported stolen.";
+        } elseif ($_POST['action'] == 'change_pin') {
+            $newPin = $_POST['pin'];
+            if (preg_match('/^\d{4}$/', $newPin)) {
+                $hashedPin = password_hash($newPin, PASSWORD_DEFAULT);
+                $stmt = $conn->prepare("UPDATE card_management SET pin = ? WHERE email = ?");
+                $stmt->bind_param("ss", $hashedPin, $email);
+                $stmt->execute();
+                $response["success"] = true;
+                $response["message"] = "PIN updated.";
+            } else {
+                $response["message"] = "Invalid PIN format.";
+            }
+        }
+        echo json_encode($response);
+        exit();
+    } elseif (isset($_POST['go_to_atm'])) {
+        header("Location: atmloc.php");
+        exit();
+    }
+}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Management</title>
     <style>
-        * {
+       * {
             box-sizing: border-box;
         }
         body {
@@ -151,31 +223,34 @@ if (!isset($_SESSION['email'])) {
     <div class="container">
         <h1>Card Management</h1>
 
-        <div class="card">
-            VISA ****1234
-        </div>
+        <div class="card">VISA <?php echo htmlspecialchars($maskedCard); ?></div>
 
         <div class="controls">
             <div class="control-item">
-                <span class="switch" id="lockSwitch" onclick="toggleSwitch('lockSwitch', 'Lock Card')"></span>
+                <span class="switch" id="lockSwitch" onclick="toggleSwitch('lockSwitch', 'Lock Card', 'toggle_lock')"></span>
                 <span>Lock Card</span>
             </div>
 
             <div class="control-item">
-                <span class="switch" id="intlSwitch" onclick="toggleSwitch('intlSwitch', 'International Use')"></span>
+                <span class="switch" id="intlSwitch" onclick="toggleSwitch('intlSwitch', 'International Use', 'toggle_intl')"></span>
                 <span>International Use</span>
             </div>
 
             <button onclick="reportLost()">Report Lost/Stolen</button>
             <button onclick="togglePinInput()">Change PIN</button>
-            <a href="atmloc.php" target="_blank" class="atm-link">ATMs Near Me</a>
+            <button onclick="goToATM()">ATMs Near Me</button>
 
             <div class="pin-input" id="pinInput">
                 <input type="text" id="pinField" maxlength="4" placeholder="Enter 4-digit PIN" oninput="validatePIN(this)">
+                <button onclick="submitPIN()">Submit PIN</button>
             </div>
 
             <div class="message" id="messageBox"></div>
         </div>
+
+        <form id="atmForm" method="POST" style="display: none;">
+            <input type="hidden" name="go_to_atm" value="1">
+        </form>
     </div>
 
     <script>
@@ -188,8 +263,37 @@ if (!isset($_SESSION['email'])) {
             }, 3000);
         }
 
+        function toggleSwitch(id, label, action) {
+            const element = document.getElementById(id);
+            const newState = !element.classList.contains('active');
+            element.classList.toggle('active');
+            fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `action=${action}&state=${newState}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(`${label} ${newState ? "enabled" : "disabled"}`);
+                } else {
+                    showMessage(data.message || "Error updating setting");
+                }
+            });
+        }
+
         function reportLost() {
-            showMessage('Report submitted');
+            fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `action=report`
+            })
+            .then(response => response.json())
+            .then(data => showMessage(data.message || "Error reporting card"));
         }
 
         function togglePinInput() {
@@ -201,11 +305,24 @@ if (!isset($_SESSION['email'])) {
             input.value = input.value.replace(/\D/g, '').slice(0, 4);
         }
 
-        function toggleSwitch(id, label) {
-            const element = document.getElementById(id);
-            element.classList.toggle('active');
-            const state = element.classList.contains('active') ? 'enabled' : 'disabled';
-            showMessage(`${label} ${state}`);
+        function submitPIN() {
+            const pin = document.getElementById("pinField").value;
+            fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `action=change_pin&pin=${pin}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessage(data.message);
+                if (data.success) document.getElementById("pinField").value = "";
+            });
+        }
+
+        function goToATM() {
+            document.getElementById('atmForm').submit();
         }
     </script>
 </body>
