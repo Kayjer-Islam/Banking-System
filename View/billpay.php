@@ -71,16 +71,13 @@ $email = $_SESSION['email'];
     <ul id="inboxList"></ul>
   </section>
 
-
 <script>
 const controller = '../Controller/BillController.php';
 
 function fetchBillers() {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', `${controller}?action=billers`, true);
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.responseText);
+  fetch(`${controller}?action=billers`)
+    .then(res => res.json())
+    .then(data => {
       const billerList = document.getElementById('billerList');
       const billerSelect = document.getElementById('billerSelect');
       billerList.innerHTML = '';
@@ -89,17 +86,13 @@ function fetchBillers() {
         billerList.innerHTML += `<li>${biller.name} (${biller.category})</li>`;
         billerSelect.innerHTML += `<option value="${biller.id}">${biller.name}</option>`;
       });
-    }
-  };
-  xhr.send();
+    });
 }
 
 function fetchBills() {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', controller, true);
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.responseText);
+  fetch(controller)
+    .then(res => res.json())
+    .then(data => {
       const tbody = document.querySelector('#billTable tbody');
       tbody.innerHTML = '';
       data.forEach(bill => {
@@ -113,103 +106,59 @@ function fetchBills() {
             <td><button onclick="deleteBill(${bill.id})">❌</button></td>
           </tr>`;
       });
-    }
-  };
-  xhr.send();
+    });
 }
 
 function fetchCalendar() {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', `${controller}?action=calendar`, true);
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.responseText);
+  fetch(`${controller}?action=calendar`)
+    .then(res => res.json())
+    .then(data => {
       const list = document.getElementById('calendarList');
       list.innerHTML = '';
       data.forEach(item => {
         list.innerHTML += `<li>${item.due_date}: ${item.count} bill(s)</li>`;
       });
-    }
-  };
-  xhr.send();
+    });
 }
 
 function fetchInbox() {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', `${controller}?action=inbox`, true);
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.responseText);
+  fetch(`${controller}?action=inbox`)
+    .then(res => res.json())
+    .then(data => {
       const list = document.getElementById('inboxList');
       list.innerHTML = '';
       data.forEach(item => {
         list.innerHTML += `<li><strong>Due:</strong> ${item.due_date} <br> <strong>e-Bill:</strong> ${item.e_bill}</li>`;
       });
-    }
-  };
-  xhr.send();
+    });
 }
 
 function deleteBill(id) {
-  const xhr = new XMLHttpRequest();
-  xhr.open('DELETE', controller, true);
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      fetchBills();
-      fetchCalendar();
-      fetchInbox();
-    }
-  };
-  xhr.send(`id=${encodeURIComponent(id)}`);
+  fetch(controller, {
+    method: 'DELETE',
+    body: new URLSearchParams({ id })
+  }).then(() => {
+    fetchBills();
+    fetchCalendar();
+    fetchInbox();
+  });
 }
 
 document.getElementById('billForm').addEventListener('submit', function (e) {
   e.preventDefault();
-
-  
-  const biller_id = document.getElementById('billerSelect').value;
-  const amount = document.getElementById('amount').value.trim();
-  const due_date = document.getElementById('due_date').value.trim();
-  const recurring = document.getElementById('recurring').value.trim();
-  const e_bill = document.getElementById('e_bill').value.trim();
-
-  if (!biller_id || isNaN(parseInt(biller_id))) {
-    alert("Please select a valid biller.");
-    return;
-  }
-
-  if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-    alert("Please enter a valid positive amount.");
-    return;
-  }
-
-  if (!due_date) {
-    alert("Please select a due date.");
-    return;
-  }
-
-  if (!recurring) {
-    alert("Please select recurring option.");
-    return;
-  }
-
-  
   const form = new FormData(this);
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', controller, true);
-  xhr.onload = () => {
-    if (xhr.status === 200) {
+  fetch(controller, {
+    method: 'POST',
+    body: form
+  }).then(res => res.json())
+    .then(() => {
       this.reset();
       fetchBills();
       fetchCalendar();
       fetchInbox();
-    } else {
-      alert("Submission failed. Please try again.");
-    }
-  };
-  xhr.send(form);
+    });
 });
+
 
 fetchBillers();
 fetchBills();
