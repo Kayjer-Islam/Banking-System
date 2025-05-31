@@ -200,7 +200,7 @@ if (!isset($_SESSION['email'])) {
     const frontFileName = document.getElementById('frontFileName');
     const backFileName = document.getElementById('backFileName');
 
-    // Show file name on file select
+   
     frontInput.addEventListener('change', () => {
       if (frontInput.files.length > 0) {
         frontFileName.textContent = frontInput.files[0].name;
@@ -225,7 +225,7 @@ if (!isset($_SESSION['email'])) {
       const account = document.getElementById('account').value;
       const amount = document.getElementById('amount').value.trim();
 
-      // Validate files
+     
       function isValidJPEG(file) {
         if (!file) return false;
         return (file.type === "image/jpeg" || file.type === "image/jpg");
@@ -267,7 +267,7 @@ if (!isset($_SESSION['email'])) {
 
       alert("Check deposited successfully!");
 
-      // For demo: reset form and file names
+      
       form.reset();
       frontFileName.textContent = '';
       backFileName.textContent = '';

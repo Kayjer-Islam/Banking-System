@@ -8,25 +8,25 @@ if (!isset($_SESSION['email'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $errors = [];
 
-    // Validate name
+    
     $name = trim($_POST['name']);
     if (empty($name)) {
         $errors[] = "Name is required.";
     }
 
-    // Validate email
+    
     $email = trim($_POST['email']);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
-    // Validate phone
+    
     $phone = trim($_POST['phone']);
     if (!(ctype_digit($phone) && strlen($phone) === 11)) {
     $errors[] = "Phone number must be 11 digits.";
 }
 
-    // Password validation
+  
     $current_pass = $_POST['current_pass'] ?? '';
     $new_pass = $_POST['new_pass'] ?? '';
     $confirm_pass = $_POST['confirm_pass'] ?? '';
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
-    // Avatar upload 
+ 
     if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === 0) {
         $allowed = ['jpg', 'jpeg', 'png', 'gif'];
         $file_ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));

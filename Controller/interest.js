@@ -10,10 +10,10 @@ function calculateInterest() {
       return;
     }
   
-    // Compound Interest (Forecast Growth)
+  
     const futureValue = principal * Math.pow((1 + rate / 100), years);
   
-    // CD Compare / Early Payoff: Monthly extra savings projection
+   
     const totalExtraPaid = extraPayment * 12 * years;
     const earlyPayoffSavings = (principal + futureValue * 0.1) - totalExtraPaid;
   

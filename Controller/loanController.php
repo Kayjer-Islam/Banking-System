@@ -2,7 +2,7 @@
 session_start();
 require_once(__DIR__ . '/../Model/db.php');
 
-// Use user email from session for authentication
+
 $email = $_SESSION['email'] ?? null;
 if (!$email) {
     http_response_code(401);
@@ -52,7 +52,7 @@ function signAgreement($app_id, $email) {
     return $success;
 }
 
-// Routing
+
 header('Content-Type: application/json');
 $action = $_GET['action'] ?? '';
 

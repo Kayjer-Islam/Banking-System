@@ -18,13 +18,13 @@ $email = $_SESSION['email'];
 <body>
   <h1>Welcome, <?= htmlspecialchars($email) ?>!</h1>
 
-  <!-- 1. Biller Directory -->
+ 
   <section>
     <h2>Biller Directory</h2>
     <ul id="billerList"></ul>
   </section>
 
-  <!-- 2. Add a New Bill -->
+
   <section>
     <h2>Schedule a New Bill</h2>
     <form id="billForm">
@@ -48,7 +48,7 @@ $email = $_SESSION['email'];
     </form>
   </section>
 
-  <!-- 3. Upcoming Bills -->
+  
   <section>
     <h2>Upcoming Bills</h2>
     <table id="billTable">
@@ -59,25 +59,28 @@ $email = $_SESSION['email'];
     </table>
   </section>
 
-  <!-- 4. Payment Calendar -->
+  
   <section>
     <h2>Payment Calendar</h2>
     <ul id="calendarList"></ul>
   </section>
 
-  <!-- 5. e-Bill Inbox -->
+  
   <section>
     <h2>e-Bill Inbox</h2>
     <ul id="inboxList"></ul>
   </section>
 
+
 <script>
 const controller = '../Controller/BillController.php';
 
 function fetchBillers() {
-  fetch(`${controller}?action=billers`)
-    .then(res => res.json())
-    .then(data => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `${controller}?action=billers`, true);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
       const billerList = document.getElementById('billerList');
       const billerSelect = document.getElementById('billerSelect');
       billerList.innerHTML = '';
@@ -86,13 +89,17 @@ function fetchBillers() {
         billerList.innerHTML += `<li>${biller.name} (${biller.category})</li>`;
         billerSelect.innerHTML += `<option value="${biller.id}">${biller.name}</option>`;
       });
-    });
+    }
+  };
+  xhr.send();
 }
 
 function fetchBills() {
-  fetch(controller)
-    .then(res => res.json())
-    .then(data => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', controller, true);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
       const tbody = document.querySelector('#billTable tbody');
       tbody.innerHTML = '';
       data.forEach(bill => {
@@ -106,60 +113,104 @@ function fetchBills() {
             <td><button onclick="deleteBill(${bill.id})">❌</button></td>
           </tr>`;
       });
-    });
+    }
+  };
+  xhr.send();
 }
 
 function fetchCalendar() {
-  fetch(`${controller}?action=calendar`)
-    .then(res => res.json())
-    .then(data => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `${controller}?action=calendar`, true);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
       const list = document.getElementById('calendarList');
       list.innerHTML = '';
       data.forEach(item => {
         list.innerHTML += `<li>${item.due_date}: ${item.count} bill(s)</li>`;
       });
-    });
+    }
+  };
+  xhr.send();
 }
 
 function fetchInbox() {
-  fetch(`${controller}?action=inbox`)
-    .then(res => res.json())
-    .then(data => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `${controller}?action=inbox`, true);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
       const list = document.getElementById('inboxList');
       list.innerHTML = '';
       data.forEach(item => {
         list.innerHTML += `<li><strong>Due:</strong> ${item.due_date} <br> <strong>e-Bill:</strong> ${item.e_bill}</li>`;
       });
-    });
+    }
+  };
+  xhr.send();
 }
 
 function deleteBill(id) {
-  fetch(controller, {
-    method: 'DELETE',
-    body: new URLSearchParams({ id })
-  }).then(() => {
-    fetchBills();
-    fetchCalendar();
-    fetchInbox();
-  });
+  const xhr = new XMLHttpRequest();
+  xhr.open('DELETE', controller, true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      fetchBills();
+      fetchCalendar();
+      fetchInbox();
+    }
+  };
+  xhr.send(`id=${encodeURIComponent(id)}`);
 }
 
 document.getElementById('billForm').addEventListener('submit', function (e) {
   e.preventDefault();
+
+  
+  const biller_id = document.getElementById('billerSelect').value;
+  const amount = document.getElementById('amount').value.trim();
+  const due_date = document.getElementById('due_date').value.trim();
+  const recurring = document.getElementById('recurring').value.trim();
+  const e_bill = document.getElementById('e_bill').value.trim();
+
+  if (!biller_id || isNaN(parseInt(biller_id))) {
+    alert("Please select a valid biller.");
+    return;
+  }
+
+  if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    alert("Please enter a valid positive amount.");
+    return;
+  }
+
+  if (!due_date) {
+    alert("Please select a due date.");
+    return;
+  }
+
+  if (!recurring) {
+    alert("Please select recurring option.");
+    return;
+  }
+
+  
   const form = new FormData(this);
-  fetch(controller, {
-    method: 'POST',
-    body: form
-  }).then(res => res.json())
-    .then(() => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', controller, true);
+  xhr.onload = () => {
+    if (xhr.status === 200) {
       this.reset();
       fetchBills();
       fetchCalendar();
       fetchInbox();
-    });
+    } else {
+      alert("Submission failed. Please try again.");
+    }
+  };
+  xhr.send(form);
 });
 
-// Initial load
 fetchBillers();
 fetchBills();
 fetchCalendar();

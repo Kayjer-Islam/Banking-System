@@ -30,7 +30,7 @@ if (!isset($_SESSION['email'])) {
     </div>
 
     <div class="results" id="results">
-      <!-- Results inserted here by JS -->
+      
     </div>
   </div>
 

@@ -341,7 +341,7 @@ mysqli_close($con);
         </div>
       </div>
 
-      <!-- Modal for Add/Edit User -->
+     
       <div id="userModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
         <div style="background-color:white; width:400px; margin:100px auto; padding:20px; border-radius:5px;">
           <h2 id="modalTitle">Add New User</h2>
@@ -411,7 +411,7 @@ mysqli_close($con);
   </div>
 
   <script>
-    // Search functionality
+    
     document.getElementById("searchInput").addEventListener("keyup", function () {
       const filter = this.value.toLowerCase();
       const rows = document.querySelectorAll("#userTable tbody tr");
@@ -422,7 +422,7 @@ mysqli_close($con);
       });
     });
 
-    // Modal functions
+    
     function showAddModal() {
       document.getElementById('modalTitle').textContent = 'Add New User';
       document.getElementById('modalAddUser').value = '1';

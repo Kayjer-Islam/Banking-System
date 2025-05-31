@@ -1,4 +1,4 @@
-// Dummy data
+
 const fraudAlerts = [
     "Unrecognized device login attempt - Dhaka, Bangladesh",
     "Multiple failed login attempts - IP: 192.168.1.9",
@@ -11,7 +11,7 @@ const fraudAlerts = [
     { time: '2025-05-05 21:12', ip: '203.0.113.55', status: 'Failed' }
   ];
   
-  // Display fraud alerts
+  
   const fraudList = document.getElementById('fraudNotifications');
   fraudAlerts.forEach(alert => {
     const li = document.createElement('li');
@@ -19,7 +19,7 @@ const fraudAlerts = [
     fraudList.appendChild(li);
   });
   
-  // Display login attempts
+ 
   const loginTable = document.getElementById('loginAttempts');
   loginHistory.forEach(entry => {
     const row = `<tr>
@@ -30,7 +30,7 @@ const fraudAlerts = [
     loginTable.innerHTML += row;
   });
   
-  // Handle suspicious report
+
   function submitReport() {
     const report = document.getElementById('reportText').value;
     const status = document.getElementById('reportStatus');

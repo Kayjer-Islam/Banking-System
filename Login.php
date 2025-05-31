@@ -5,7 +5,7 @@ $email = $password = "";
 $emailErr = $passwordErr = "";
 $loginError = "";
 
-// Connect to the database
+
 $con = mysqli_connect('127.0.0.1', 'root', '', 'webtech section a');
 if (!$con) {
     die("Connection failed: " . mysqli_connect_error());
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($result && $row = $result->fetch_assoc()) {
             $_SESSION['email'] = $row['email'];
-            $_SESSION['role'] = $row['role']; // assumes there's a 'role' column
+            $_SESSION['role'] = $row['role']; 
 
             if ($row['role'] === "admin") {
                 header("Location: Admin.html");

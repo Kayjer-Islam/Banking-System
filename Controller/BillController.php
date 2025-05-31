@@ -34,30 +34,34 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
 
-    case 'POST':
-        $data = $_POST;
+case 'POST':
+    $data = $_POST;
 
-        // Use null if e_bill not passed
-        $e_bill = $data['e_bill'] ?? null;
+    
+    $biller_id = filter_var($data['biller_id'], FILTER_VALIDATE_INT);
+    $amount = filter_var($data['amount'], FILTER_VALIDATE_FLOAT);
+    $due_date = $data['due_date'];
+    $recurring = $data['recurring'];
+    $e_bill = $data['e_bill'] ?? null;
 
-        $id = $model->addBill(
-            $email,
-            $data['biller_id'],
-            $data['amount'],
-            $data['due_date'],
-            $data['recurring'],
-            $e_bill
-        );
+    if (!$biller_id || !$amount || empty($due_date) || empty($recurring)) {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid input"]);
+        exit();
+    }
 
-        echo json_encode([
-            'id' => $id,
-            'biller_id' => $data['biller_id'],
-            'amount' => $data['amount'],
-            'due_date' => $data['due_date'],
-            'recurring' => $data['recurring'],
-            'e_bill' => $e_bill
-        ]);
-        break;
+    $id = $model->addBill($email, $biller_id, $amount, $due_date, $recurring, $e_bill);
+
+    echo json_encode([
+        'id' => $id,
+        'biller_id' => $biller_id,
+        'amount' => $amount,
+        'due_date' => $due_date,
+        'recurring' => $recurring,
+        'e_bill' => $e_bill
+    ]);
+    break;
+
 
     case 'DELETE':
         parse_str(file_get_contents("php://input"), $data);

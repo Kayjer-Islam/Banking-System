@@ -1,4 +1,4 @@
-// Sample banking services dataset
+
 const items = [
     { name: "Savings Account", category: "Account" },
     { name: "Current Account", category: "Account" },
@@ -14,10 +14,10 @@ const items = [
   const searchInput = document.getElementById("searchInput");
   const categoryFilter = document.getElementById("categoryFilter");
   
-  // Display items on page load
+
   window.onload = filterItems;
   
-  // Function to filter and render items
+
   function filterItems() {
     const searchTerm = searchInput.value.toLowerCase();
     const selectedCategory = categoryFilter.value;
@@ -32,7 +32,7 @@ const items = [
     renderItems(filteredItems);
   }
   
-  // Render the filtered items to the page
+ 
   function renderItems(filteredItems) {
     resultsContainer.innerHTML = "";
   

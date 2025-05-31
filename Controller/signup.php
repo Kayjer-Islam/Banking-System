@@ -4,7 +4,6 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once '../model/dbuser.php'; 
 
-    // Check if 'users' table exists
     $tableCheck = mysqli_query($con, "SHOW TABLES LIKE 'users'");
     if (mysqli_num_rows($tableCheck) == 0) {
         die("Required table 'users' is missing. Please contact administrator.");
@@ -19,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = [];
 
-    // Validation
     if (empty($fullName)) $errors[] = "Full name is required.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email format.";
     if (strlen($password) < 8) $errors[] = "Password must be at least 8 characters.";

@@ -10,16 +10,47 @@ function validateProfileForm() {
     return false;
   }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    alert("Invalid email format.");
-    return false;
+
+function isValidEmail(email) {
+  if (!email.includes("@")) return false;
+
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+
+  const localPart = parts[0];
+  const domainPart = parts[1];
+
+  if (localPart.length === 0 || domainPart.length === 0) return false;
+  if (!domainPart.includes(".")) return false;
+
+  const domainParts = domainPart.split(".");
+  if (domainParts.some(part => part.length === 0)) return false;
+
+  return true;
+}
+
+
+function isValidPhone(phone) {
+  if (phone.length !== 11) return false;
+
+  for (let i = 0; i < phone.length; i++) {
+    const char = phone[i];
+    if (char < '0' || char > '9') return false;
   }
 
-  if (!/^\d{11}$/.test(phone)) {
-    alert("Phone number must be 11 digits.");
-    return false;
-  }
+  return true;
+}
+
+
+if (!isValidEmail(email)) {
+  alert("Invalid email format.");
+  return false;
+}
+
+if (!isValidPhone(phone)) {
+  alert("Phone number must be 11 digits.");
+  return false;
+}
 
   if (newPass !== '') {
     if (newPass.length < 8) {
@@ -32,5 +63,5 @@ function validateProfileForm() {
     }
   }
 
-  return true; // form is valid
+  return true; 
 }

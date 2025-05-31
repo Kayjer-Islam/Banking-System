@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStatus();
 });
 
-// Load loan products and fill product select
+
 function fetchProducts() {
     fetch('../controller/loanController.php?action=products')
         .then(res => res.json())

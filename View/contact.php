@@ -5,14 +5,14 @@ if (!isset($_SESSION['email'])) {
     exit();
 }
 
-// Retrieve previous form data and messages
+
 $name = $_SESSION['form_data']['name'] ?? '';
 $email = $_SESSION['form_data']['email'] ?? '';
 $subject = $_SESSION['form_data']['subject'] ?? '';
 $message = $_SESSION['form_data']['message'] ?? '';
 $form_message = $_SESSION['message'] ?? '';
 
-// Clear session data after use
+
 unset($_SESSION['form_data']);
 unset($_SESSION['message']);
 ?>
@@ -102,7 +102,7 @@ unset($_SESSION['message']);
       <label>Message:</label>
       <textarea id="message" rows="5" name="message" required><?= htmlspecialchars($message) ?></textarea>
 
-      <!-- CAPTCHA -->
+     
       <div class="captcha">
         <label id="captchaLabel"></label>
         <input type="text" name="captchaInput" placeholder="Enter CAPTCHA" required>
