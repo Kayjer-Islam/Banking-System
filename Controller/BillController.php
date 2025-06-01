@@ -39,6 +39,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         
         $e_bill = $data['e_bill'] ?? null;
+        
 
         $id = $model->addBill(
             $email,

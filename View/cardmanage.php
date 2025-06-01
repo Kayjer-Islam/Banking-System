@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $response["message"] = "Card reported stolen.";
         } elseif ($_POST['action'] == 'change_pin') {
             $newPin = $_POST['pin'];
-            if (preg_match('/^\d{4}$/', $newPin)) {
+           if (ctype_digit($newPin) && strlen($newPin) === 4)
+ {
                 $hashedPin = password_hash($newPin, PASSWORD_DEFAULT);
                 $stmt = $conn->prepare("UPDATE card_management SET pin = ? WHERE email = ?");
                 $stmt->bind_param("ss", $hashedPin, $email);
