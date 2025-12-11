@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($_POST['action'] == 'change_pin') {
             $newPin = $_POST['pin'];
            if (ctype_digit($newPin) && strlen($newPin) === 4)
- {
+    {
                 $hashedPin = password_hash($newPin, PASSWORD_DEFAULT);
                 $stmt = $conn->prepare("UPDATE card_management SET pin = ? WHERE email = ?");
                 $stmt->bind_param("ss", $hashedPin, $email);
